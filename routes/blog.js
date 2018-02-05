@@ -1,6 +1,4 @@
-var express = require('express');
-var router = express.Router();
-var URL = require('url');
+
 
 // // create database
 var mongoose = require('mongoose'),
@@ -20,7 +18,9 @@ var db = mongoose.createConnection(DB_URL);
 var Article = db.model('article', articleSchema);
 
 exports.list = function (req, res) {
+  console.log(req.session.cookie)
   Article.find(function (err, article) {
+
     res.json({ code: 0, data: article, message: '哈哈' });
   });
 };

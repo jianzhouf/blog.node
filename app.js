@@ -1,4 +1,5 @@
 var express = require('express');
+var session = require('express-session');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -8,11 +9,32 @@ var cors = require('cors');
 
 var index = require('./routes/index');
 var blog = require('./routes/blog');
+var user = require('./routes/user');
+
 
 var app = express();
 
+//创建seesionStore
+var MemoryStore = session.MemoryStore,
+  sessionStore = new MemoryStore();
+
 //设置跨域访问
-app.use(cors())
+app.use(cors({ credentials: true, origin: 'http://localhost:8080' }))
+
+// Use the session middleware 
+app.use(session({
+  ////这里的name值得是cookie的name，默认cookie的name是：connect.sid
+  //name: 'hhw',
+  secret: 'zj',
+  cookie: ('name', 'value', { path: '/', httpOnly: true, secure: false, maxAge: 600000 }),
+  //重新保存：强制会话保存即使是未修改的。默认为true但是得写上
+  resave: true,
+  //强制“未初始化”的会话保存到存储。 
+  saveUninitialized: false,
+  store: sessionStore
+}))
+
+
 
 
 // view engine setup
@@ -24,14 +46,41 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser('zj'));
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(function (req, res, next) {
+  if (req.url === '/login') {
+    next();
+  } else {
+    // if (!loginUser) {
+    //   res.json({ code: 10001, message: "未登录" })
+    // } else {
+    //   next();
+    // }
+    sessionStore.get(req.sessionID, function (err, data) {
+      if (err || !data) {
+        res.json({ code: 10001, message: "未登录" })
+      } else {
+        next();
+      }
+    });
+  }
+});
+
 
 app.use('/', index);
 app.get('/list', blog.list);
 app.post('/add', blog.add);
 app.post('/update', blog.update);
 app.get('/detailById', blog.detailById);
+app.post('/login', user.login);
+app.post('/logout', user.logout);
+app.post('/sign', user.sign);
+
+
+
+
 
 
 // catch 404 and forward to error handler
