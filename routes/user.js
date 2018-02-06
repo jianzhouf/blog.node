@@ -21,6 +21,7 @@ exports.login = function (req, res) {
                     if (err) {
                         return res.json({ code: 2, message: '登录失败' });
                     }
+                    req.session.loginUser = userInfo.userName;
                     res.json({ code: 0, message: "登录成功" })
                 });
             } else
@@ -48,25 +49,16 @@ exports.logout = function (req, res, next) {
 };
 
 exports.getUserInfo = function (req, res) {
-    User.findOne({ userName: req.body.userName }, function (err, userInfo) {
+    User.findOne({ userName: req.session.loginUser }, function (err, userInfo) {
         if (!err) {
-            if (!userInfo) {
-                res.json({ code: 10, message: "用户名或密码错误" })
-                return;
+            let data = {
+                userName: userInfo.userName,
+                realName: userInfo.realName,
+                avater: userInfo.avater
             }
-            if (userInfo.password === req.body.password) {
-                req.session.regenerate(function (err) {
-                    if (err) {
-                        return res.json({ code: 2, message: '登录失败' });
-                    }
-                    req.session.loginUser = userInfo.name;
-                    res.json({ code: 0, message: "登录成功" })
-                });
-            } else
-                res.json({ code: 10, message: "密码错误" })
-        } else {
-            res.json({ code: err.code, message: err.message })
+            res.json({ code: 0, message: '成功', data })
         }
+        res.json({ code: 1, message: '查询失败' })
     })
 };
 

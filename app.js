@@ -26,6 +26,7 @@ app.use(session({
   ////这里的name值得是cookie的name，默认cookie的name是：connect.sid
   //name: 'hhw',
   secret: 'zj',
+  signed: true,
   cookie: ('name', 'value', { path: '/', httpOnly: true, secure: false, maxAge: 600000 }),
   //重新保存：强制会话保存即使是未修改的。默认为true但是得写上
   resave: true,
@@ -77,6 +78,8 @@ app.get('/detailById', blog.detailById);
 app.post('/login', user.login);
 app.post('/logout', user.logout);
 app.post('/sign', user.sign);
+app.get('/getUserInfo', user.getUserInfo);
+
 
 
 
