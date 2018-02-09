@@ -50,15 +50,17 @@ exports.logout = function (req, res, next) {
 
 exports.getUserInfo = function (req, res) {
     User.findOne({ userName: req.session.loginUser }, function (err, userInfo) {
+        console.log(userInfo)
         if (!err) {
             let data = {
                 userName: userInfo.userName,
                 realName: userInfo.realName,
                 avater: userInfo.avater
             }
-            res.json({ code: 0, message: '成功', data })
+            res.json({ code: 0, data })
+        } else {
+            res.json({ code: 1, message: '查询失败' })
         }
-        res.json({ code: 1, message: '查询失败' })
     })
 };
 

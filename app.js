@@ -50,15 +50,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser('zj'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+//登录校验
 app.use(function (req, res, next) {
   if (req.url === '/login') {
     next();
   } else {
-    // if (!loginUser) {
-    //   res.json({ code: 10001, message: "未登录" })
-    // } else {
-    //   next();
-    // }
     sessionStore.get(req.sessionID, function (err, data) {
       if (err || !data) {
         res.json({ code: 10001, message: "未登录" })
