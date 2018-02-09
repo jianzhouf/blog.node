@@ -41,4 +41,9 @@ Built-In Roles（内置角色）：
 7. 内部角色：__system
 ```
 
-
+#已完成
+1./list 列表
+2./detailById 详情
+3./login 登录
+4./add 发布
+5./update 修改
